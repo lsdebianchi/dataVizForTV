@@ -1,6 +1,7 @@
 //
 //
 var Scenes = {
+  Time: TimeScene,
   Wave: WaveScene,
   Weapon: WeaponScene,
   Quake: QuakeScene
