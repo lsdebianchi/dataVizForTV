@@ -1,0 +1,36 @@
+body {
+  margin: 0px;
+  padding: 0px;
+  border-style: none;
+  background-color: black;
+}
+
+#paper_canvas {
+  width: 100vw;
+  height: 56.25vw;
+  position: absolute;
+  top: calc(50vh - 28.125vw);
+  left: 0px;
+}
+
+#pure_canvas {
+  width: 100vw;
+  height: 56.25vw;
+  background-color: rgb(46, 46, 46);
+  position: absolute;
+  top: calc(50vh - 28.125vw);
+  left: 0px;
+}
+
+@font-face {
+  font-family: libertine;
+  src: url(../assets/typo/LinLibertine_R.otf);
+}
+@font-face {
+  font-family: garcia;
+  src: url(../assets/typo/GARCIA-Regular.otf);
+}
+@font-face {
+  font-family: roma;
+  src: url(../assets/typo/roma.ttf);
+}
