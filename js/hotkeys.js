@@ -32,7 +32,7 @@ $("body").on("keydown", function(e) {
   else if (e.which == 37) {
     clearScene();
     scene_index--;
-    scene_index %= scene_name_list.length;
+    if (scene_index < 0) scene_index = scene_name_list.length - 1;
     loadCurrentScene();
   }
   if (KeyNames["_" + e.which]) {

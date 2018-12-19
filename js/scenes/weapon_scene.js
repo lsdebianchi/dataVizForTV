@@ -65,12 +65,14 @@ var WeaponScene = function() {
     this.instantiate_item = function() {
       let side = this.next_side_left;
 
-      let item = new P.Raster({
-        position: [side ? 0 - 5 * S : W + 5 * S, 0],
-        source: "./assets/" + this.name + ".png"
-        //parent: this.group
-        //size: [10, 10]
-      });
+      console.log(this.name + "_SVG");
+      let item = this.context[this.name + "_SVG"].copy();
+      // let item = new P.Raster({
+      //   position: [side ? 0 - 5 * S : W + 5 * S, 0],
+      //   source: "./assets/" + this.name + ".png"
+      //   //parent: this.group
+      //   //size: [10, 10]
+      // });
       item.scale(0.2, 0.2);
       item._x = item.position.x;
       item._y = item.position.y;
@@ -115,18 +117,22 @@ var WeaponScene = function() {
   this.cheese_SVG = undefined;
   this.cheese_bg_SVG = undefined;
 
+  let imp = new P.Path.Rectangle({
+    point: [0, 0],
+    size: [0, 0]
+  });
+
   for (let i in this.items_names) {
     let n = this.items_names[i];
-    this[n + "_SVG"] = P.importSVG(
+    this[n + "_SVG"] = imp.importSVG(
       "./assets/items/" + n + ".svg",
       this.loaderStep()
     );
-    this[n + "_bg_SVG"] = P.importSVG(
+    this[n + "_bg_SVG"] = imp.importSVG(
       "./assets/items/" + n + "_bg.svg",
       this.loaderStep()
     );
   }
-
   this.setup();
 };
 
@@ -136,6 +142,8 @@ WeaponScene.prototype = {
     console.log("imported: " + this.importCount);
     if (this.importCount == this.totalImportNumber) {
       console.log("import ready!");
+      //console.log(this.milk_SVG);
+
       this.setup();
     }
   },
