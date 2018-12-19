@@ -4,8 +4,8 @@ var WeaponScene = function() {
   this.timer = 0;
   this.fallingTreshold = 20 * S;
 
-  this.items_names = ["milk", "weapon", "paper"];
-  this.items_rates = [4, 1, 5];
+  this.items_names = ["milk", "weapon", "paper", "cheese", "chicken"];
+  this.items_rates = [4, 6, 5, 3, 4];
   this.items_number = this.items_names.length;
 
   this.ordering = false;
@@ -65,12 +65,14 @@ var WeaponScene = function() {
     this.instantiate_item = function() {
       let side = this.next_side_left;
 
-      let item = new P.Raster({
-        position: [side ? 0 - 5 * S : W + 5 * S, 0],
-        source: "./assets/" + this.name + ".png"
-        //parent: this.group
-        //size: [10, 10]
-      });
+      console.log(this.name + "_SVG");
+      let item = this.context[this.name + "_SVG"].copy();
+      // let item = new P.Raster({
+      //   position: [side ? 0 - 5 * S : W + 5 * S, 0],
+      //   source: "./assets/" + this.name + ".png"
+      //   //parent: this.group
+      //   //size: [10, 10]
+      // });
       item.scale(0.2, 0.2);
       item._x = item.position.x;
       item._y = item.position.y;
@@ -100,11 +102,51 @@ var WeaponScene = function() {
   };
 
   this.outlests = [];
-  console.log("hu");
+
+  this.importCount = 0;
+  this.totalImportNumber = 10;
+
+  this.milk_SVG = undefined;
+  this.milk_bg_SVG = undefined;
+  this.weapon_SVG = undefined;
+  this.weapon_bg_SVG = undefined;
+  this.paper_SVG = undefined;
+  this.paper_bg_SVG = undefined;
+  this.chicken_SVG = undefined;
+  this.chicken_bg_SVG = undefined;
+  this.cheese_SVG = undefined;
+  this.cheese_bg_SVG = undefined;
+
+  let imp = new P.Path.Rectangle({
+    point: [0, 0],
+    size: [0, 0]
+  });
+
+  for (let i in this.items_names) {
+    let n = this.items_names[i];
+    this[n + "_SVG"] = imp.importSVG(
+      "./assets/items/" + n + ".svg",
+      this.loaderStep()
+    );
+    this[n + "_bg_SVG"] = imp.importSVG(
+      "./assets/items/" + n + "_bg.svg",
+      this.loaderStep()
+    );
+  }
   this.setup();
 };
 
 WeaponScene.prototype = {
+  loaderStep: function() {
+    this.importCount++;
+    console.log("imported: " + this.importCount);
+    if (this.importCount == this.totalImportNumber) {
+      console.log("import ready!");
+      //console.log(this.milk_SVG);
+
+      this.setup();
+    }
+  },
   setup: function() {
     for (let i = 0; i < this.items_names.length; i++) {
       let new_out = new this.Outlet({
