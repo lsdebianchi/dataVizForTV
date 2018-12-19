@@ -16,7 +16,6 @@ body {
 #pure_canvas {
   width: 100vw;
   height: 56.25vw;
-  background-color: rgb(46, 46, 46);
   position: absolute;
   top: calc(50vh - 28.125vw);
   left: 0px;
@@ -34,3 +33,4 @@ body {
   font-family: roma;
   src: url(../assets/typo/roma.ttf);
 }
+@import url("https://fonts.googleapis.com/css?family=Inconsolata");

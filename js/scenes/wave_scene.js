@@ -244,7 +244,7 @@ var WaveScene = function() {
 
     this.getNewText = function(mov, order) {
       if (!mov && order) {
-        let choice = Math.floor(Math.random() * 4);
+        let choice = Math.floor(Math.random() * 2);
         if (choice === 0) this.generateText(this.temperature + "°C");
         else if (choice === 1) this.generateText(this.wave_tall_meters + " m");
       } else {
@@ -311,7 +311,7 @@ WaveScene.prototype = {
 
       for (let i in this.beaches) {
         let beach = this.beaches[i];
-        beach.x -= (beach.x - beach.tx) * 0.1;
+        beach.x -= (beach.x - beach.tx) * 0.05;
         if (Math.abs(beach.x - beach.tx) <= 1) {
           beach.x = beach.tx;
           arrivals++;

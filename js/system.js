@@ -55,13 +55,13 @@ function loadCurrentScene() {
 }
 
 function clearScene() {
-  $("#pure_canvas").css("background-color", "rgb(46, 46, 46)");
+  $("#pure_canvas").css("background-color", "rgb(0, 0, 0)");
   C.clearRect(0, 0, W, H);
-  for (let i in P.view.children) {
-    let el = P.view.choldren[i];
-    el.remove();
-  }
+  P.remove();
   current_scene = undefined;
+  P.setup(document.getElementById("paper_canvas"));
+  T = new P.Tool();
+  setupPaperToolEvent();
 }
 
 window.onresize = function() {
@@ -89,11 +89,4 @@ function setupPaperToolEvent() {
   T.onMouseUp = function(event) {
     //
   };
-}
-
-function map_val(val, a1, a2, b1, b2) {
-  var v = ((val - a1) / (a2 - a1)) * (b2 - b1) + b1;
-  if (v < b1) v = b1;
-  if (v > b2) v = b2;
-  return v;
 }

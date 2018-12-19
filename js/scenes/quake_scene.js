@@ -216,7 +216,7 @@ QuakeScene.prototype = {
     for (let i in this.quakes) {
       let q = this.quakes[i];
       //q.placeLabel();
-      q.x += this.speed;
+      q.x += this.speed * S * 0.2;
       if (q.x > W + 150) q.x = -150;
       q.rectangle.position.x += this.speed;
       if (q.rectangle.position.x > W + 150) q.rectangle.position.x = -150;
@@ -279,7 +279,7 @@ QuakeScene.prototype = {
           continue;
         } else {
           if (!s._active) {
-            s.point.y += 0.2;
+            s.point.y += 0.05 * S;
 
             //s.point.y = s._base_y;
             if (s.point.y > s._base_y) {

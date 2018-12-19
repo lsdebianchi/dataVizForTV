@@ -14,7 +14,8 @@
 
   <body>
 
-    <canvas id="pure_canvas" width="100vw" height="56.25vw"></canvas>
+    <canvas id="pure_canvas"></canvas>
+
     <canvas id="paper_canvas" width="100vw" height="56.25vw"></canvas>
 
 
@@ -23,19 +24,29 @@
   </body>
 
 
+
   <!-- LIBS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.7.1/pixi.min.js"></script>
   <script type="text/javascript" src="./js/lib/paper-full.min.js"></script>
   <script type="text/javascript" src="./js/lib/chroma.js"></script>
   <script type="text/javascript" src="./js/lib/moment.js"></script>
 
+  <script type="text/javascript" src="./js/utility.js"></script>
+
+  <script>
+  console.log(window.innerWidth);
+  console.log(window.innerWidth*0.5625);
+    $("#pure_canvas").attr("width", window.innerWidth + "px");
+    $("#pure_canvas").attr("height", (window.innerWidth*0.5625) + "px");
+
+  </script>
+
+
   <script type="text/javascript" src="./js/data/quakes_list.js"></script>
   <script type="text/javascript" src="./js/data/beaches_list.js"></script>
+  <script type="text/javascript" src="./js/data/cities_timezones_list.js"></script>
   <!-- <script type="text/javascript" src="./js/lib/tracker/tracking.js"></script> -->
   <!-- <script type="text/javascript" src="./js/lib/tracker/face-min.js"></script> -->
 
-  <!-- DATA -->
-  <!-- <script type="text/javascript" src="./js/data/data.js"></script> -->
   <!-- SCENES -->
   <script type="text/javascript" src="./js/scenes/time_scene.js"></script>
   <script type="text/javascript" src="./js/scenes/wave_scene.js"></script>
