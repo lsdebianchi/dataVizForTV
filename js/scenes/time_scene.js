@@ -1,11 +1,13 @@
 var TimeScene = function() {
   $("#pure_canvas").css("background-color", "black");
 
+  this.tick_timer = 0;
   this.showHere = false;
+  this.tickReady = false;
 
-  this.waveGeneration = 0;
+  this.originPlace = "Zurich";
 
-  this.column_number = 12;
+  this.column_number = 17;
   this.column_w = W / this.column_number;
   this.row_h = this.column_w / 2.5;
   this.row_number = Math.floor(H / this.row_h + 1);
@@ -32,6 +34,8 @@ var TimeScene = function() {
     this.h = arg.h;
     this.loop_i = arg.loop_i;
 
+    this.originActivated = false;
+
     this.intensity = 0;
     this.latency = 4;
 
@@ -48,6 +52,7 @@ var TimeScene = function() {
     this.context.drawStamp(this);
 
     this.update = function() {
+      // if (this.intensity - this.latency < 0) this.originActivated = false;
       this.context.drawStamp(this);
 
       this.intensity -= this.latency;
@@ -90,7 +95,10 @@ var TimeScene = function() {
           }
         } else if (this.type == 1) {
           //HOURS
-          this.i = Number(moment().format("h")) - 1;
+          this.i = Math.round(
+            ((Number(moment().format("h")) - 1) / 12) *
+              this.context.column_number
+          );
           this.j++;
           if (this.j >= this.context.row_number) {
             this.j = 0;
@@ -99,6 +107,7 @@ var TimeScene = function() {
 
         let stamp = this.context.stamps[this.i][this.j];
         stamp.intensity = 100;
+        stamp.originActivated = false;
         stamp.time = moment().utcOffset(stamp.UTC);
         this.context.updateList.push(stamp);
       }
@@ -126,7 +135,9 @@ var TimeScene = function() {
           stamp.intensity = 100;
           stamp.time = moment().utcOffset(stamp.UTC);
           stamp._visited = true;
-          this.context.updateList.push(stamp);
+          stamp.originActivated = true;
+          // this.context.updateList.push(stamp);
+          this.context.drawStampSingle(stamp);
 
           this.last_pos.splice(k, 1);
           if (
@@ -164,16 +175,16 @@ var TimeScene = function() {
         }
 
         if (this.last_pos.length == 0) {
-          console.log("OVER");
+          this.context.tickReady = true;
           for (let i in stamp_l) {
             for (let j in stamp_l[i]) {
               stamp_l[i][j]._visited = false;
             }
           }
-          this.last_pos.push([
-            Math.floor(this.context.column_number / 2),
-            Math.floor(this.context.row_number / 2)
-          ]);
+          // this.last_pos.push([
+          //   Math.floor(this.context.column_number / 2),
+          //   Math.floor(this.context.row_number / 2)
+          // ]);
         }
       }
     };
@@ -184,8 +195,39 @@ var TimeScene = function() {
 };
 
 TimeScene.prototype = {
+  drawStampSingle: function(s) {
+    let c_bg = s.loop_i * 6 + (s.intensity / 100) * 30;
+    c_bg = s.loop_i * 6; //+ (s.intensity / 100) * 50;
+    //let c_bg = Math.floor(Math.random() * 255);
+    C.fillStyle = "rgb(" + c_bg + ", " + c_bg + ", " + c_bg + ")";
+
+    C.fillRect(s.x - s.w / 2, s.y - s.h / 2, s.w, s.h);
+    // C.clearRect(s.x - s.w / 2, s.y - s.h / 2, s.w, s.h);
+
+    let originPlace = this.originPlace.replace(/_/g, " ");
+    if (originPlace.length > 12)
+      originPlace = originPlace.substring(0, 11) + ".";
+
+    let originTime = moment().utcOffset(timeZone_list[this.originPlace].UTC);
+
+    C.fillStyle = "rgb(" + 255 + ", " + 255 + ", " + 255 + ")";
+
+    C.font = /*big*/ +s.h * 0.35 + "px Inconsolata";
+    C.textAlign = "left";
+    let margin = S * 0.5;
+
+    C.fillText(originPlace, margin + s.x - s.w / 2, s.y - s.h / 10);
+
+    C.fillStyle = "rgb(" + 255 + ", " + 255 + ", " + 0 + ")";
+    C.fillText(
+      originTime.format("HH:mm:ss"),
+      margin + s.x - s.w / 2,
+      s.y + s.h / 3.5
+    );
+  },
+
   drawStamp: function(s) {
-    let c_bg = s.loop_i * 6 + (s.intensity / 100) * 50;
+    let c_bg = s.loop_i * 6 + (s.intensity / 100) * 30;
     c_bg = s.loop_i * 6; //+ (s.intensity / 100) * 50;
     //let c_bg = Math.floor(Math.random() * 255);
     C.fillStyle = "rgb(" + c_bg + ", " + c_bg + ", " + c_bg + ")";
@@ -194,7 +236,7 @@ TimeScene.prototype = {
 
     let c_yellow = s.loop_i * 6 + (s.intensity / 100) * 255;
 
-    if (s.intensity > 1) {
+    if (s.intensity > 1 && !s.originActivated) {
       C.fillStyle = "rgb(" + c_yellow + ", " + c_yellow + ", " + 0 + ")";
       C.beginPath();
       C.arc(s.x + s.w / 5, s.y + s.h / 6, 0.1 * S, 0, 2 * Math.PI);
@@ -210,14 +252,23 @@ TimeScene.prototype = {
     C.textAlign = "left";
     let margin = S * 0.5;
 
+    let originPlace = this.originPlace.replace(/_/g, " ");
+    if (originPlace.length > 12)
+      originPlace = originPlace.substring(0, 11) + ".";
+
+    let originTime = moment().utcOffset(timeZone_list[this.originPlace].UTC);
+
+    let place = s.originActivated ? originPlace : s.place;
+    let time = s.originActivated ? originTime : s.time;
+
     l = 150 + (s.intensity / 100) * 255;
     C.fillStyle = "rgb(" + l + ", " + l + ", " + l + ")";
-    C.fillText(s.place, margin + s.x - s.w / 2, s.y - s.h / 10);
+    C.fillText(place, margin + s.x - s.w / 2, s.y - s.h / 10);
 
     l = (s.intensity / 100) * 255;
     C.fillStyle = "rgb(" + 255 + ", " + 255 + ", " + (255 - l) + ")";
     C.fillText(
-      s.time.format("HH:mm:ss"),
+      time.format("HH:mm:ss"),
       margin + s.x - s.w / 2,
       s.y + s.h / 3.5
     );
@@ -259,7 +310,9 @@ TimeScene.prototype = {
       speed: 30 / this.column_number
     });
     this.hoursEvent = new this.UpdateEvent({
-      i: Number(moment().format("h")) - 1,
+      i: Math.floor(
+        ((Number(moment().format("h")) - 1) / 12) * this.column_number
+      ),
       j: 0,
       type: 1,
       parent: this,
@@ -287,7 +340,20 @@ TimeScene.prototype = {
       this.minuteEvent.update();
       this.hoursEvent.update();
     } else {
+      console.log("show");
       this.explosion.update();
+      if (this.tickReady) {
+        console.log("tick");
+        this.tick_timer--;
+        if (this.tick_timer <= 0) {
+          this.tick_timer = 30;
+          for (let i in this.stamps) {
+            for (let j in this.stamps[i]) {
+              this.drawStampSingle(this.stamps[i][j]);
+            }
+          }
+        }
+      }
     }
 
     // for (let i in this.updateEvents) {
@@ -304,6 +370,7 @@ TimeScene.prototype = {
           speed: 1,
           parent: this
         });
+        this.updateList = [];
       }
       this.showHere = true;
       this.minuteEvent.i = this.column_number;
@@ -313,8 +380,15 @@ TimeScene.prototype = {
 
   keyup: function(key) {
     if (key === "p") {
+      this.tickReady = false;
+
       this.showHere = false;
       this.explosion = undefined;
+      for (let i in this.stamps) {
+        for (let j in this.stamps[i]) {
+          this.updateList.push(this.stamps[i][j]);
+        }
+      }
     }
   }
 };
